@@ -1,0 +1,8 @@
+- targeting
+- movement
+- attack cooldown
+- placing obsidian
+- breaking crystals with packets
+- pearl
+- lethal
+- rizz up girls with cool pvp
