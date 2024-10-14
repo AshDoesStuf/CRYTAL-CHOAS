@@ -1,23 +1,28 @@
-const mineflayer = require('mineflayer');
-const {CrystalBot} = require("./js/crystalBot.js")
+const mineflayer = require("mineflayer");
+const { CrystalBot } = require("./js/crystalBot.js");
+const pathfinder = require("mineflayer-pathfinder").pathfinder;
 const bot = mineflayer.createBot({
   host: "NubPlayzBoi.aternos.me",
   port: 26216,
-  username: 'stopItGetHelp',
-  version: "1.19.2",// 1.20 is buggy
-})
+  username: "stopItGetHelp",
+  version: "1.19.2",
+});
 
-bot.once("spawn", () => {
+bot.loadPlugin(pathfinder);
+
+bot.once("spawn", async () => {
   bot.crystaler = new CrystalBot(bot);
+
+  await bot.waitForChunksToLoad();
 
   bot.on("chat", (username, message) => {
     if (username === bot.username) return;
 
     let args = message.split(" ");
-    const command = args[0]
+    const command = args[0];
     const commandArgs = args.splice(1);
 
-    console.log(`Command: ${command}, args: ${commandArgs}`)
+    console.log(`Command: ${command}, args: ${commandArgs}`);
 
     if (command === "attack") {
       const targetUsername = commandArgs[0] || username;
@@ -28,11 +33,27 @@ bot.once("spawn", () => {
     }
 
     if (command === "stop") {
-      bot.crystaler.stop()
+      bot.crystaler.stop();
     }
-  })
+  });
+
+  bot.on("death", bot.crystaler.stop);
+
+  bot.on("entityDead", (entity) => {
+    if (bot.crystaler.target && entity === bot.crystaler.target) {
+      bot.chat("L nerd");
+      bot.crystaler.stop();
+    }
+  });
+
+  bot.on("entityDead", (entity) => {
+    if (bot.crystaler.target && entity === bot.crystaler.target) {
+      bot.chat("L nerd");
+      bot.crystaler.stop();
+    }
+  });
 
   bot.on("physicsTick", () => {
     bot.crystaler.update();
-  })
-})
+  });
+});
